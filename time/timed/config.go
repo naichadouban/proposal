@@ -2,6 +2,28 @@ package main
 
 import (
 	"../util"
+	"path/filepath"
+)
+
+// 定义默认的配置项
+const (
+	defaultConfigFilename = "hctimed.conf"
+	defaultDataDirname    = "data"
+	defaultLogLevel       = "info"
+	defaultLogDirname     = "logs"
+	defaultLogFilename    = "hctimed.log"
+
+	defaultMainnetPort = "49152"
+	defaultTestnetPort = "59152"
+)
+
+var (
+	defaultHomeDir       = util.AppDataDir("timed", false)
+	defaultConfigFile    = filepath.Join(defaultHomeDir, defaultConfigFilename)
+	defaultDataDir       = filepath.Join(defaultHomeDir, defaultDataDirname)
+	defaultHPPTSKeyFile  = filepath.Join(defaultHomeDir, "https.key")
+	defaultHTTPSCertFile = filepath.Join(defaultHomeDir, "https.cert")
+	defaultLogDir        = filepath.Join(defaultHomeDir, defaultLogDirname)
 )
 // 配置项
 type config struct {
@@ -27,10 +49,30 @@ type config struct {
 	StoreCert         string `long:"storecert" description:"File containing the https certificate file for storehost"`
 	EnableCollections bool   `long:"enablecollections" description:"Allow clienst to query collection timestamps."`
 }
-// 定义默认的配置项
-var (
-	defaultHomeDir = util.
-)
-func loadConfig() (*config,[]string,error) {
 
+// runServiceCommand:仅设置为window上的实际功能，
+// 用来解析和执行通过-s标记的服务命令
+var runServiceCommand func(string) error
+
+// 初始化并且解析配置，通过配置文件和命令行
+// 配置过程如下
+// 1） 以比较合理的设置开始默认配置
+// 2） 预解析命令行以检查备用的配置文件
+// 3） 加载配置文件，并覆盖任何可能的默认值
+// 4） 解析命令行选项，并重写或者改变特定的选项
+//
+// 这样安排，使应用程序在没有任何配置文件的情况下能正常运行，同事也允许用户用配置文件来更改默认配置
+// 命令行的参数往往是最优先的
+func loadConfig() (*config, []string, error) {
+	// 默认配置
+	cfg := config{
+		HomeDir:    defaultHomeDir,
+		ConfigFile: defaultConfigFile,
+		DebugLevel: defaultLogLevel,
+		DataDir:    defaultDataDir,
+		LogDir:     defaultLogDir,
+		HTTPSKey:   defaultHPPTSKeyFile,
+		HTTPSCert:  defaultHTTPSCertFile,
+		Version:    version(),
+	}
 }
