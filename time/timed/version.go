@@ -20,12 +20,23 @@ const (
 
 	appPreRelease = ""
 )
-func version(){
+var appBuild string
+// 返回合适的version版本
+func version()string{
 	version := fmt.Sprintf("%d.%d.%d",appMajor,appMinor,appPatch)
+	preRelease := normalizeVerString(appPreRelease)
+	if preRelease != ""{
+		version = fmt.Sprintf("%s-%s",version,preRelease)
+	}
+	build := normalizeVerString(appBuild)
+	if appBuild != ""{
+		version = fmt.Sprintf("%s+%s",version,build)
+	}
+	return version
 }
 
 // normalizeVerString
-// 返回通过的字符，
+// 返回通过的字符，舍弃不符合规则的字符。尤其是，字符必须包含在semanticAlphabet
 func normalizeVerString(str string) string{
 	var result bytes.Buffer
 	for _,r := range str {

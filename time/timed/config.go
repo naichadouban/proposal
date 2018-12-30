@@ -3,6 +3,7 @@ package main
 import (
 	"../util"
 	"path/filepath"
+	"
 )
 
 // 定义默认的配置项
@@ -25,6 +26,9 @@ var (
 	defaultHTTPSCertFile = filepath.Join(defaultHomeDir, "https.cert")
 	defaultLogDir        = filepath.Join(defaultHomeDir, defaultLogDirname)
 )
+// runServiceCommand:仅设置为window上的实际功能，
+// 用来解析和执行通过-s标记的服务命令
+var runServiceCommand func(string) error
 // 配置项
 type config struct {
 	HomeDir           string   `short:"A" long:"appdata" description:"Path to application home directory"`
@@ -49,10 +53,14 @@ type config struct {
 	StoreCert         string `long:"storecert" description:"File containing the https certificate file for storehost"`
 	EnableCollections bool   `long:"enablecollections" description:"Allow clienst to query collection timestamps."`
 }
+//serviceOptions 把app配置为window上的服务
+type serviceOptions struct {
+	ServiceCommond string `short:"s" long:"service" description:"Service commond {install,remove,start,stop}"`
+}
 
-// runServiceCommand:仅设置为window上的实际功能，
-// 用来解析和执行通过-s标记的服务命令
-var runServiceCommand func(string) error
+// newConfigParser 返回一个命令行解析器
+func newConfigParser (cfg *config,so *serviceOptions,options flags.Options)
+
 
 // 初始化并且解析配置，通过配置文件和命令行
 // 配置过程如下
@@ -75,4 +83,8 @@ func loadConfig() (*config, []string, error) {
 		HTTPSCert:  defaultHTTPSCertFile,
 		Version:    version(),
 	}
+	// service 选项只有在window上时才添加
+	serviceOpts := serviceOptions{}
+	preCfg := cfg
+	preParser := newConfigParser(&preCfg   )
 }
